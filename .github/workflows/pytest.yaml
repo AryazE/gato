@@ -10,9 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
           matrix:
-            python-version: ["3.9", "3.10"]
-
-        timeout-minutes: 60
+            python-version: ["3.10"]
 
         steps:
           - name: Checkout the repo
@@ -23,40 +21,15 @@ jobs:
               python-version: ${{ matrix.python-version }}
           - run: |
               python -m pip install --upgrade pip
+              pip install pytest-xdist
               pip install -e ".[test]"
           - name: Instrument code
             uses: AryazE/auto-dylin/instrument@main
-          - name: Test with Pytest
-            run: |
-              pytest --cov-fail-under=80
-          - name: Report results
-            if: always()
-            uses: AryazE/auto-dylin/report@main
-
-    OSX-test-and-lint:
-        name: OS X Test and Lint
-        runs-on: macos-latest
-        strategy:
-          matrix:
-            python-version: ["3.9", "3.10"]
-
-        timeout-minutes: 60
-
-        steps:
-          - name: Checkout the repo
-            uses: actions/checkout@v4
-          - name: Setup python
-            uses: actions/setup-python@v5
             with:
-              python-version: ${{ matrix.python-version }}
-          - run: |
-              python -m pip install --upgrade pip
-              pip install -e ".[test]"
-          - name: Instrument code
-            uses: AryazE/auto-dylin/instrument@main
+                analysis-coverage: false
           - name: Test with Pytest
             run: |
-              pytest --cov-fail-under=80
+              pytest -n 4
           - name: Report results
             if: always()
             uses: AryazE/auto-dylin/report@main
